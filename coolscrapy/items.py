@@ -12,3 +12,11 @@ class CoolscrapyItem(scrapy.Item):
     # define the fields for your item here like:
     # name = scrapy.Field()
     pass
+
+class SecurityReport(scrapy.Item):
+    vul_id = scrapy.Field()
+    title = scrapy.Field()
+    summary = scrapy.Field()
+    public_time = scrapy.Field()
+    url = scrapy.Field()
+
