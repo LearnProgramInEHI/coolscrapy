@@ -1,6 +1,11 @@
 #!/usr/bin/env python
 # coding:utf-8
 # author : w0xffff
+# date   : 2018/4/16 23:17
+# IDE    : PyCharm
+#!/usr/bin/env python
+# coding:utf-8
+# author : w0xffff
 # date   : 2018/4/16 20:05
 # IDE    : PyCharm
 
@@ -16,13 +21,21 @@ https://www.talosintelligence.com/vulnerability_reports#disclosed
 '''
 class MySpider(CrawlSpider):
     name = 'report'
-    def __init__(self):
-        self.allowed_domain = ['tencent.com']
-        self.start_urls = ['https://xlab.tencent.com/cn/category/advisories/']
-        self.rules = (
-            Rule(LinkExtractor(allow=('tencent.com'),restrict_xpaths="//a[@class='next page-numbers']")),
-            Rule(LinkExtractor(allow=('tencent.com'),restrict_xpaths="//header/h2/a"),callback='parse_items')
-        )
+    def __init__(self,rule):
+
+        self.rule = rule
+        if ',' in rule.start_urls or ',' in rule.allowed_domain:
+            self.start_urls = rule.start_urls.split(',')
+            self.allowed_domain = rule.allowed_domain.split(",")
+        else:
+            self.start_urls = [rule.start_urls]
+            self.allowed_domain = [rule.allowed_domain]
+
+        self.rule_list = []
+        if rule.next_page_xpath:
+            self.rule_list.append(Rule(LinkExtractor(allow=self.allowed_domain,restrict_xpaths=rule.next_page_xpath)))
+        self.rule_list.append(Rule(LinkExtractor(allow=self.allowed_domain,restrict_xpaths=rule.detail_page_xpath),callback='parse_items'))
+        self.rules = tuple(self.rule_list)
         super(MySpider,self).__init__()
 
 
@@ -31,24 +44,23 @@ class MySpider(CrawlSpider):
         item['url'] = response.url
         #self.logger.info(response.xpath('//div/footer/span[2]/a/time[1]/text()').extract()[0])
         try:
-            item['public_time'] = response.xpath('//div/footer/span[2]/a/time[1]/text()').extract()[0]
+            item['public_time'] = response.xpath(self.rule.public_time.xpath).extract()[0]
         except Exception as e:
             item['public_time'] = 'null'
             self.logger.error(item["public_time"]+"is null and it is in ",item['url'])
 
         try:
-            item['vul_id'] = response.xpath("//html//div[@id='content']//p[1]/text()").extract()[0]
+            item['vul_id'] = response.xpath(self.rule.vul_id_xpath).extract()[0]
         except Exception as e:
             item['vul_id'] = 'null'
             self.logger.error(item["vul_id"]+"is null and it is in ",item['url'])
-
         try:
-            item["summary"] = response.xpath("//html//p[4]/text()").extract()[0]
+            item["summary"] = response.xpath(self.rule.summary_xpath).extract()[0]
         except Exception as e:
             item["summary"] = 'null'
             self.logger.error(item["vul_id"]+"is null and it is in ",item['url'])
         try:
-            item['title'] = response.xpath("//h1[@class='entry-title']/text()").extract()[0]
+            item['title'] = response.xpath(self.rule.title_xpath).extract()[0]
         except Exception as e:
             item['title'] = 'null'
             self.logger.error(item["title"] + "is null and it is in ", item['url'])

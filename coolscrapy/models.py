@@ -15,6 +15,16 @@ engine = create_engine('mysql+pymysql://'+MYSQL_USER+':'+MYSQL_PASSWORD+'@'+MYSQ
 Session = sessionmaker(bind=engine)
 Base = declarative_base()
 
+class ReportRules(Base):
+    __tablename__='reportrules'
+    id = Column(Integer,primary_key=True)
+    allowed_domain = Column(String(256))
+    start_urls = Column(String(256))
+    vul_id_xpath = Column(String(256))
+    title_xpath = Column(String(256))
+    summary_xpath = Column(String(256))
+    public_time_xpath = Column(String(256))
+    enable = Column(Integer)
 
 
 class Report(Base):
