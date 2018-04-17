@@ -18,13 +18,20 @@ Base = declarative_base()
 class ReportRules(Base):
     __tablename__='reportrules'
     id = Column(Integer,primary_key=True)
+    name = Column(String(256))
     allowed_domain = Column(String(256))
     start_urls = Column(String(256))
     vul_id_xpath = Column(String(256))
     title_xpath = Column(String(256))
     summary_xpath = Column(String(256))
+    next_page_xpath = Column(String(256))
     public_time_xpath = Column(String(256))
+    detail_page_xpath = Column(String(256))
+    allow_url = Column(String(256))
     enable = Column(Integer)
+
+    def __repr__(self):
+        return "<ReportRules: {}>".format(self.name)
 
 
 class Report(Base):

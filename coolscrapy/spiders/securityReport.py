@@ -14,16 +14,16 @@ https://www.talosintelligence.com/vulnerability_reports#zerodays
 https://www.talosintelligence.com/vulnerability_reports#disclosed
 
 '''
-class MySpider(CrawlSpider):
-    name = 'report'
+class MySpider2(CrawlSpider):
+    name = 'report2'
     def __init__(self):
-        self.allowed_domain = ['tencent.com']
-        self.start_urls = ['https://xlab.tencent.com/cn/category/advisories/']
+        self.allowed_domain = ['https://www.talosintelligence.com/vulnerability_reports#disclosed']
+        self.start_urls = ['https://www.talosintelligence.com/vulnerability_reports#disclosed']
         self.rules = (
             Rule(LinkExtractor(allow=('tencent.com'),restrict_xpaths="//a[@class='next page-numbers']")),
             Rule(LinkExtractor(allow=('tencent.com'),restrict_xpaths="//header/h2/a"),callback='parse_items')
         )
-        super(MySpider,self).__init__()
+        super(MySpider2,self).__init__()
 
 
     def parse_items(self,response):
